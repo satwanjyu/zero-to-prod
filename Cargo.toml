@@ -2,7 +2,31 @@
 name = "zero-to-prod"
 version = "0.1.0"
 edition = "2021"
+authors = ["satwanjyu <satwanjyu@outlook.com>"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "zero-to-prod"
 
 [dependencies]
+actix-web = "4.3.1"
+chrono = "0.4.26"
+config = { version = "0.13.3", default-features = false, features = ["yaml"] }
+secrecy = { version = "0.8.0", features = ["serde"] }
+serde = { version = "1.0.171", features = ["derive"] }
+serde-aux = "4.2.0"
+sqlx = { version = "0.7.1", features = ["runtime-tokio-rustls", "macros", "postgres", "uuid", "chrono", "migrate"] }
+tokio = { version = "1.29.1", features = ["macros", "rt-multi-thread"] }
+tracing = { version = "0.1.37", features = ["log"] }
+tracing-actix-web = "0.7.5"
+tracing-bunyan-formatter = "0.3.8"
+tracing-log = "0.1.3"
+tracing-subscriber = { version = "0.3.17", features = ["registry", "env-filter"] }
+uuid = { version = "1.4.1", features = ["v4"] }
+
+[dev-dependencies]
+once_cell = "1.18.0"
+reqwest = "0.11.18"

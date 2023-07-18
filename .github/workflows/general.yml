@@ -1,0 +1,136 @@
+name: General
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+  SQLX_VERSION: 0.7.1
+  SQLX_FEATURES: "rustls,postgres"
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: postgres
+        ports:
+            - 5432:5432
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Rust toolchain
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: sqlx-${{ env.SQLX_VERSION }}
+
+      - name: Install sqlx-cli
+        run:
+          cargo install sqlx-cli
+          --version=${{ env.SQLX_VERSION }}
+          --features ${{ env.SQLX_FEATURES }}
+          --no-default-features
+          --locked
+
+      - name: Install psql
+        run: sudo apt update && sudo apt install postgresql-client -y
+
+      - name: Run migration
+        run: SKIP_DOCKER=true ./scripts/init_db.sh
+
+      - name: cargo test
+        run: cargo test
+
+  fmt:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Check formatting
+        run: cargo fmt --check
+
+  clippy:
+    name: Clippy lint
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: sqlx-${{ env.SQLX_VERSION }}
+
+      - name: Install sqlx-cli
+        run:
+          cargo install sqlx-cli
+          --version=${{ env.SQLX_VERSION }}
+          --features ${{ env.SQLX_FEATURES }}
+          --no-default-features
+          --locked
+
+      - name: Install psql
+        run: sudo apt update && sudo apt install postgresql-client -y
+
+      - name: Run migration
+        run: SKIP_DOCKER=true ./scripts/init_db.sh
+
+      - name: cargo clippy
+        run: cargo clippy -- -D warnings
+
+  coverage:
+    name: Generate code coverage
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install sqlx-cli
+        run:
+          cargo install sqlx-cli
+          --version=${{ env.SQLX_VERSION }}
+          --features ${{ env.SQLX_FEATURES }}
+          --no-default-features
+          --locked
+
+      - name: Install psql
+        run: sudo apt update && sudo apt install postgresql-client -y
+
+      - name: Run migration
+        run: SKIP_DOCKER=true ./scripts/init_db.sh
+
+      - name: cargo tarpaulin
+        run: cargo install cargo-tarpaulin && cargo tarpaulin --verbose --workspace

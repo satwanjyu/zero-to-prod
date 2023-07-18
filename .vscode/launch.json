@@ -1,0 +1,83 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'zero-to-prod'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=zero-to-prod"
+                ],
+                "filter": {
+                    "name": "zero-to-prod",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'zero-to-prod'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=zero-to-prod",
+                    "--package=zero-to-prod"
+                ],
+                "filter": {
+                    "name": "zero-to-prod",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'zero-to-prod'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=zero-to-prod",
+                    "--package=zero-to-prod"
+                ],
+                "filter": {
+                    "name": "zero-to-prod",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'health_check'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=health_check",
+                    "--package=zero-to-prod"
+                ],
+                "filter": {
+                    "name": "health_check",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
