@@ -34,5 +34,4 @@ services:
 databases:
   - engine: PG
     name: newsletter
-    num_nodes: 1
-    size: db-s-dev-database
+    production: false
