@@ -14,7 +14,7 @@ name = "zero-to-prod"
 [dependencies]
 actix-web = "4.3.1"
 anyhow = "1.0.75"
-chrono = "0.4.26"
+chrono = "0.4.31"
 config = { version = "0.13.3", default-features = false, features = ["yaml"] }
 linkify = "0.10.0"
 rand = { version = "0.8.5", features = ["std_rng"] }
