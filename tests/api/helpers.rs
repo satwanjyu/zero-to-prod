@@ -1,6 +1,5 @@
 use argon2::{password_hash::SaltString, Algorithm, Argon2, Params, PasswordHasher, Version};
 use once_cell::sync::Lazy;
-use reqwest::redirect;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
 use wiremock::MockServer;
@@ -93,7 +92,7 @@ impl TestApp {
     }
 
     pub async fn get_login_html(&self) -> String {
-        reqwest::Client::new()
+        self.api_client
             .get(&format!("{}/login", &self.address))
             .send()
             .await

@@ -63,16 +63,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug integration test 'health_check'",
+            "name": "Debug integration test 'api'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--test=health_check",
+                    "--test=api",
                     "--package=zero-to-prod"
                 ],
                 "filter": {
-                    "name": "health_check",
+                    "name": "api",
                     "kind": "test"
                 }
             },
