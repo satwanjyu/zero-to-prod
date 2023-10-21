@@ -5,8 +5,8 @@ use sqlx::PgPool;
 
 use crate::{
     authentication::{validate_credentials, AuthError, Credentials},
-    routes::error_chain_fmt,
     session_state::TypedSession,
+    utils::error_chain_fmt,
 };
 
 #[derive(serde::Deserialize)]

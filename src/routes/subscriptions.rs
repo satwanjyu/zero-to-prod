@@ -8,6 +8,7 @@ use crate::{
     domain::{NewSubscriber, SubscriberEmail, SubscriberName},
     email_client::EmailClient,
     startup::ApplicationBaseUrl,
+    utils::error_chain_fmt,
 };
 use chrono::Utc;
 use uuid::Uuid;
@@ -142,20 +143,6 @@ async fn store_token(
     )
     .execute(transaction.as_mut())
     .await?;
-
-    Ok(())
-}
-
-pub fn error_chain_fmt(
-    e: &impl std::error::Error,
-    f: &mut std::fmt::Formatter<'_>,
-) -> std::fmt::Result {
-    writeln!(f, "{}\n", e)?;
-    let mut current = e.source();
-    while let Some(cause) = current {
-        writeln!(f, "Caused by:\n\t{}", cause)?;
-        current = cause.source();
-    }
 
     Ok(())
 }

@@ -30,7 +30,7 @@ pub async fn submit_newsletter_form(flash_messages: IncomingFlashMessages) -> Ht
             <input
                 type="text"
                 placeholder="Enter Content in HTML"
-                name="content_html"
+                name="html_content"
             >
         </label>
         <br>
@@ -38,7 +38,7 @@ pub async fn submit_newsletter_form(flash_messages: IncomingFlashMessages) -> Ht
             <input
                 type="text"
                 placeholder="Enter Content in Plain Text"
-                name="content_text"
+                name="text_content"
             >
         </label>
         <br>

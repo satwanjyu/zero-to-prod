@@ -2,34 +2,19 @@ use actix_web::{web, HttpResponse};
 use anyhow::Context;
 use sqlx::PgPool;
 
-use crate::routes::error_chain_fmt;
 use crate::utils::e500;
 use crate::{domain::SubscriberEmail, email_client::EmailClient};
 
-#[derive(thiserror::Error)]
-pub enum PublishError {
-    #[error("Authentication failed.")]
-    AuthError(#[source] anyhow::Error),
-    #[error(transparent)]
-    UnexpectedError(#[from] anyhow::Error),
-}
-
-impl std::fmt::Debug for PublishError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        error_chain_fmt(self, f)
-    }
-}
-
 #[derive(serde::Deserialize)]
-pub struct NewslettersForm {
+pub struct FormData {
     title: String,
-    body_html: String,
-    body_text: String,
+    html_content: String,
+    text_content: String,
 }
 
 #[tracing::instrument(name = "Publish a newsletter issue", skip(form, pool, email_client))]
 pub async fn publish_newsletter(
-    form: web::Form<NewslettersForm>,
+    form: web::Form<FormData>,
     pool: web::Data<PgPool>,
     email_client: web::Data<EmailClient>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -41,8 +26,8 @@ pub async fn publish_newsletter(
                     .send_email(
                         &subscriber.email,
                         &form.title,
-                        &form.body_html,
-                        &form.body_text,
+                        &form.html_content,
+                        &form.text_content,
                     )
                     .await
                     .with_context(|| {
