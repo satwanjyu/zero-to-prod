@@ -2,11 +2,12 @@ use actix_web::HttpResponse;
 use actix_web_flash_messages::IncomingFlashMessages;
 use std::fmt::Write;
 
-pub async fn submit_newsletter_form(flash_messages: IncomingFlashMessages) -> HttpResponse {
-    let mut error_html = String::new();
+pub async fn publish_newsletter_form(flash_messages: IncomingFlashMessages) -> HttpResponse {
+    let mut msg_html = String::new();
     for m in flash_messages.iter() {
-        writeln!(error_html, "<p><i>{}</i></p>", m.content()).unwrap();
+        writeln!(msg_html, "<p><i>{}</i></p>", m.content()).unwrap();
     }
+    let idempotency_key = uuid::Uuid::new_v4();
 
     HttpResponse::Ok().body(format!(
         r#"<!DOCTYPE html>
@@ -16,7 +17,7 @@ pub async fn submit_newsletter_form(flash_messages: IncomingFlashMessages) -> Ht
     <title>Submit Newsletter</title>
 </head>
 <body>
-    {error_html}
+    {msg_html}
     <form action="admin/newsletters" method="post">
         <label>Title
             <input
@@ -42,6 +43,7 @@ pub async fn submit_newsletter_form(flash_messages: IncomingFlashMessages) -> Ht
             >
         </label>
         <br>
+        <input hidden type="text" name="idempotency_key" value="{idempotency_key}">
         <button type="submit">Submit</button>
     </form>
     <p><a href="/admin/dashboard">&lt;- Back</a></p>

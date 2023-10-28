@@ -38,24 +38,24 @@ pub async fn change_password(
         FlashMessage::error("New password should be at most 128 characters long.").send();
         return Ok(see_other("/admin/password"));
     }
-    let username = get_username(*user_id, &pool).await.map_err(e500)?;
+    let username = get_username(user_id.0, &pool).await.map_err(e500)?;
     let credentials = Credentials {
         username,
         password: form.0.current_password,
     };
     match validate_credentials(credentials, &pool).await {
         Ok(_) => {}
-        Err(e) => match e {
-            AuthError::InvalidCredentials(_) => {
-                FlashMessage::error("The current password is incorrect.").send();
-                return Ok(see_other("/admin/password"));
+        Err(e) => {
+            return match e {
+                AuthError::InvalidCredentials(_) => {
+                    FlashMessage::error("The current password is incorrect.").send();
+                    Ok(see_other("/admin/password"))
+                }
+                AuthError::UnexpectedError(_) => Err(e500(e)),
             }
-            AuthError::UnexpectedError(_) => {
-                return Err(e500(e));
-            }
-        },
+        }
     }
-    crate::authentication::change_password(*user_id, form.0.new_password, &pool)
+    crate::authentication::change_password(user_id.0, form.0.new_password, &pool)
         .await
         .map_err(e500)?;
     FlashMessage::info("Your password has been changed.").send();

@@ -11,5 +11,5 @@ pub use subscriptions_confirm::confirm;
 mod admin;
 pub use admin::{
     admin_dashboard, change_password, change_password_form, logout, publish_newsletter,
-    submit_newsletter_form,
+    publish_newsletter_form,
 };

@@ -9,7 +9,7 @@ fi
 if ! [ -x "$(command -v sqlx)" ]; then
   echo >&2 "Error: sqlx is not installed."
   echo >&2 "Use:"
-  echo >&2 "    cargo install sqlx-cli --no-default-features --feaures postgres"
+  echo >&2 "    cargo install sqlx-cli --no-default-features --features postgres"
   echo >&2 "to install it."
   exit 1
 fi
@@ -26,7 +26,8 @@ then
     -e POSTGRES_PASSWORD=${DB_PASSWORD} \
     -e POSTGRES_DB=${DB_NAME} \
     -p "${DB_PORT}:5432" \
-    -d postgres \
+    -d \
+    --name "postgres_$(date '+%s')" \
     postgres -N 1000
 fi
 

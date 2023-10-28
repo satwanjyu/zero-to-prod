@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 set -eo pipefail
 
 RUNNING_CONTAINER=$(docker ps --filter 'name=redis' --format '{{.ID}}')

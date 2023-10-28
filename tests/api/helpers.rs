@@ -5,6 +5,8 @@ use uuid::Uuid;
 use wiremock::MockServer;
 use zero_to_prod::{
     configuration::{get_configuration, DatabaseSettings},
+    email_client::EmailClient,
+    issue_delivery_worker::{try_execute_task, ExecutionOutcome},
     startup::{get_connection_pool, Application},
     telemetry::{get_subscriber, init_subscriber},
 };
@@ -34,6 +36,7 @@ pub struct TestApp {
     pub email_server: MockServer,
     pub test_user: TestUser,
     pub api_client: reqwest::Client,
+    pub email_client: EmailClient,
 }
 
 impl TestApp {
@@ -77,7 +80,11 @@ impl TestApp {
             .expect("Failed to execute request")
     }
 
-    pub async fn post_newsletters<Body>(&self, body: Body) -> reqwest::Response
+    pub async fn get_newsletters_html(&self) -> String {
+        self.get_newsletters().await.text().await.unwrap()
+    }
+
+    pub async fn post_publish_newsletter<Body>(&self, body: Body) -> reqwest::Response
     where
         Body: serde::Serialize,
     {
@@ -99,6 +106,14 @@ impl TestApp {
             .send()
             .await
             .expect("Failed to execute request.")
+    }
+
+    pub async fn login_with_test_user(&self) {
+        self.post_login(&serde_json::json!({
+            "username": &self.test_user.username,
+            "password": &self.test_user.password
+        }))
+        .await;
     }
 
     pub async fn get_login_html(&self) -> String {
@@ -145,7 +160,7 @@ impl TestApp {
             .form(body)
             .send()
             .await
-            .expect("Failed to execute reqwest.")
+            .expect("Failed to execute request.")
     }
 
     pub async fn post_logout(&self) -> reqwest::Response {
@@ -154,6 +169,18 @@ impl TestApp {
             .send()
             .await
             .expect("Failed to execute request.")
+    }
+
+    pub async fn dispatch_all_pending_emails(&self) {
+        loop {
+            if let ExecutionOutcome::EmptyQueue =
+                try_execute_task(&self.db_pool, &self.email_client)
+                    .await
+                    .unwrap()
+            {
+                break;
+            }
+        }
     }
 }
 
@@ -193,6 +220,7 @@ pub async fn spawn_app() -> TestApp {
         email_server,
         test_user: TestUser::generate(),
         api_client: client,
+        email_client: configuration.email_client.client(),
     };
     test_app.test_user.store(&test_app.db_pool).await;
 

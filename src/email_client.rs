@@ -1,4 +1,4 @@
-use reqwest::{Client, Url};
+use reqwest::Url;
 use secrecy::{ExposeSecret, Secret};
 
 use crate::domain::SubscriberEmail;
@@ -17,7 +17,7 @@ impl EmailClient {
         authorization_token: Secret<String>,
         timeout: std::time::Duration,
     ) -> Self {
-        let http_client = Client::builder().timeout(timeout).build().unwrap();
+        let http_client = reqwest::Client::builder().timeout(timeout).build().unwrap();
         Self {
             http_client,
             base_url,

@@ -10,7 +10,7 @@ pub async fn admin_dashboard(
     user_id: web::ReqData<UserId>,
     pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let username = get_username(*user_id.into_inner(), &pool)
+    let username = get_username(user_id.into_inner().0, &pool)
         .await
         .map_err(e500)?;
 

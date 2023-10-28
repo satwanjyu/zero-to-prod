@@ -5,4 +5,4 @@ pub use password::{change_password, change_password_form};
 mod logout;
 pub use logout::logout;
 mod newsletters;
-pub use newsletters::{publish_newsletter, submit_newsletter_form};
+pub use newsletters::{publish_newsletter, publish_newsletter_form};
