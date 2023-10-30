@@ -48,7 +48,7 @@ uuid = { version = "1.4.1", features = ["v4", "serde"] }
 validator = "0.16.1"
 actix-web-flash-messages = { version = "0.4", features = ["cookies"] }
 actix-session = { version = "0.8.0", features = ["redis-rs-tls-session"] }
-actix-web-lab = "0.19"
+actix-web-lab = "0.20"
 
 [dependencies.reqwest]
 version = "0.11"
