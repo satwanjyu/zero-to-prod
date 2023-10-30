@@ -22,7 +22,7 @@ htmlescape = "0.3.1"
 linkify = "0.10.0"
 rand = { version = "0.8.5", features = ["std_rng"] }
 secrecy = { version = "0.8.0", features = ["serde"] }
-serde = { version = "1.0.171", features = ["derive"] }
+serde = { version = "1.0.190", features = ["derive"] }
 serde-aux = "4.2.0"
 sqlx = { version = "0.7.1", features = [
   "runtime-tokio-rustls",
